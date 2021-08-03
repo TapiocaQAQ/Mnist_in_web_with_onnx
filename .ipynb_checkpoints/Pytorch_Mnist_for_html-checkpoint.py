@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
+import torchvision
 
 
 class Net(nn.Module):
@@ -110,6 +111,9 @@ def main():
         test_kwargs.update(cuda_kwargs)
 
     transform=transforms.Compose([
+        # add random transform to the image
+        torchvision.transforms.RandomAffine(degrees=30, translate=(0.5, 0.5), scale=(0.25, 1), 
+                                                    shear=(-30, 30, -30, 30)),
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
         ])

@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
+MEAN = 0.1307
+STANDARD_DEVIATION = 0.3081
+
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -13,6 +17,16 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
+        #reshape and normalize the input data
+        x = x.reshape(280, 280, 4) # 4 = r g b alpha
+        # x = x[:, :, 3] # use alpha to find out the handwritering
+        x = torch.narrow(x, dim=2, start=3, length=1)
+        x = x.reshape(1, 1, 280, 280)
+        x = F.avg_pool2d(x, 10)
+        x = x / 255
+        x = (x - MEAN) / STANDARD_DEVIATION
+        
+        
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
